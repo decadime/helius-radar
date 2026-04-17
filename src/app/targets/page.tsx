@@ -6,6 +6,8 @@ import { PageContainer } from "@/components/ui/PageContainer";
 import { Panel } from "@/components/ui/Panel";
 import { ButtonLink } from "@/components/ui/Button";
 import { RegenerateButton } from "@/components/targets/RegenerateButton";
+import { MAX_UI_REGENERATIONS_PER_DAY } from "@/lib/rateLimits";
+import { getUiRegenerationsRemaining } from "./actions";
 import { DateSelector } from "@/components/targets/DateSelector";
 import { TargetsSummary } from "@/components/targets/TargetsSummary";
 import {
@@ -35,7 +37,10 @@ export default async function TargetsPage({
   const selectedIso = isoDateUTC(selected);
   const todayIso = isoDateUTC(today);
 
-  const targets = await getTargetsForDate(selected);
+  const [targets, regenerationsRemaining] = await Promise.all([
+    getTargetsForDate(selected),
+    getUiRegenerationsRemaining(),
+  ]);
 
   const rows: TargetRow[] = targets.map((t) => ({
     id: t.id,
@@ -78,7 +83,10 @@ export default async function TargetsPage({
           >
             Export CSV
           </ButtonLink>
-          <RegenerateButton />
+          <RegenerateButton
+            remaining={regenerationsRemaining}
+            dailyLimit={MAX_UI_REGENERATIONS_PER_DAY}
+          />
         </>
       }
     >
