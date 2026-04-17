@@ -1,70 +1,216 @@
-// Prisma schema for Helius Radar
-// Docs: https://pris.ly/d/prisma-schema
+// Prisma schema for Helius Radar (PostgreSQL).
+//
+// Enums are enforced at the DB layer so bad values cannot land on disk even
+// if application-level validation is skipped (e.g. direct SQL, future workers,
+// or an agent that emits a row through a different path).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// A company or protocol observed in the candidate universe.
+// -----------------------------------------------------------------------------
+// Enums
+// -----------------------------------------------------------------------------
+
+enum Segment {
+  DEX
+  DEFI
+  NFT
+  GAMING
+  WALLET
+  INFRA
+  TOOLING
+  STABLECOIN
+  RWA
+  CONSUMER
+  PAYMENTS
+  TRADING
+  OTHER
+}
+
+enum TrackStatus {
+  CANDIDATE
+  TRACKED
+  WATCHLIST
+  REJECTED
+}
+
+enum SignalType {
+  FUNDING
+  HIRING
+  PRODUCT_LAUNCH
+  ONCHAIN_ACTIVITY
+  TEAM_MOVE
+  PARTNERSHIP
+  TECH_CHANGE
+  SOCIAL
+  PRESS
+  OTHER
+}
+
+// Mirrors the current Helius product surface as published on helius.dev/docs.
+// Keep this list in sync with `prettifyProduct()` in src/lib/bdView.ts and
+// with the cheat sheet in prompts/agent/map_to_helius_product.md.
+enum HeliusProduct {
+  RPC                    // Solana RPC Nodes (shared)
+  DEDICATED_NODES        // Private enterprise nodes, no rate limits
+  SENDER                 // Ultra-low-latency txn landing (traders / MEV bots)
+  SHRED_DELIVERY         // Raw shreds over UDP — earliest on-chain signal (HFT)
+  LASERSTREAM            // LaserStream gRPC
+  WEBSOCKETS_ENHANCED    // Enhanced WebSockets with filtering
+  WEBHOOKS               // Event notifications
+  DAS_API                // Digital Asset Standard (NFT + token metadata/search)
+  ENHANCED_TXNS          // Decoded transaction parsing
+  PRIORITY_FEES          // Priority Fee API
+  WALLET_API             // Balances / history / identities for wallet apps
+  ZK_COMPRESSION         // Compressed NFTs and tokens
+  OTHER
+}
+
+enum TargetStatus {
+  OPEN
+  WORKING
+  CONTACTED
+  MEETING_SET
+  WON
+  PASSED
+}
+
+enum RunType {
+  CANDIDATE_INGEST
+  SIGNAL_INGEST
+  MATCH_INGEST
+  TARGET_GENERATION
+  CANDIDATE_DISCOVERY
+  MAINTENANCE
+}
+
+enum RunOutcome {
+  SUCCESS
+  PARTIAL
+  FAILURE
+}
+
+// -----------------------------------------------------------------------------
+// Models
+// -----------------------------------------------------------------------------
+
+// A company or protocol in the candidate universe.
 model Account {
-  id          String   @id @default(cuid())
-  name        String
-  domain      String?  @unique
-  segment     String?
-  chain       String?
-  stage       String?
-  hqRegion    String?
-  employees   Int?
-  description String?
+  id                  String       @id @default(cuid())
+  companyName         String
+  domain              String?      @unique
+  segment             Segment
+  subsegment          String?
+  description         String?
 
-  tracked     Boolean  @default(false)
-  score       Float?
+  trackStatus         TrackStatus  @default(CANDIDATE)
+  identificationScore Float?
+  confidence          Float?
 
-  signals     Signal[]
-  targets     DailyTarget[]
+  heliusFitSummary    String?
+  recommendedWedge    String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  source              String?
+  sourceUrl           String?
 
-  @@index([tracked])
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  signals             Signal[]
+  productMatches      ProductMatch[]
+  dailyTargets        DailyTarget[]
+
+  @@index([trackStatus])
   @@index([segment])
+  @@index([identificationScore(sort: Desc)])
 }
 
-// A discrete event observed about an account (funding, hiring, on-chain, etc).
+// A discrete event observed about an account.
 model Signal {
-  id         String   @id @default(cuid())
-  accountId  String
-  account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  id          String     @id @default(cuid())
+  accountId   String
+  account     Account    @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  kind       String
-  source     String?
-  summary    String
-  url        String?
-  weight     Float    @default(1)
-  observedAt DateTime @default(now())
+  signalType  SignalType
+  title       String
+  sourceUrl   String?
+  summary     String?
+  detectedAt  DateTime
+  confidence  Float?
+  impactScore Float?
 
+  createdAt   DateTime   @default(now())
+
+  // Dedupe key for ingestion: two signals with the same title on the same
+  // account at the same instant are the same event.
+  @@unique([accountId, title, detectedAt])
   @@index([accountId])
-  @@index([observedAt])
+  @@index([signalType])
+  @@index([detectedAt(sort: Desc)])
 }
 
-// A daily shortlist of accounts worth reaching out to.
+// Scored alignment between an account and a Helius product.
+model ProductMatch {
+  id            String        @id @default(cuid())
+  accountId     String
+  account       Account       @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  heliusProduct HeliusProduct
+  matchScore    Float
+  rationale     String?
+  primaryMatch  Boolean       @default(false)
+
+  createdAt     DateTime      @default(now())
+
+  @@unique([accountId, heliusProduct])
+  @@index([accountId])
+  @@index([heliusProduct])
+}
+
+// Ranked outbound queue entry for a given day.
 model DailyTarget {
-  id          String   @id @default(cuid())
-  accountId   String
-  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  id               String       @id @default(cuid())
+  targetDate       DateTime     @db.Date
+  accountId        String
+  account          Account      @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  forDate     DateTime
-  rank        Int
-  rationale   String?
-  status      String   @default("open") // open | working | won | passed
+  priorityRank     Int
+  whyNow           String?
+  recommendedWedge String?
+  nextAction       String?
+  status           TargetStatus @default(OPEN)
 
-  createdAt   DateTime @default(now())
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
-  @@unique([accountId, forDate])
-  @@index([forDate])
+  @@unique([targetDate, accountId])
+  @@index([targetDate])
+  @@index([status])
+  @@index([priorityRank])
+}
+
+// Audit trail for ingest / scoring / target-generation jobs. Every script
+// run appends exactly one row so the ops history is recoverable from the DB
+// alone (no reliance on terminal scrollback).
+model RunLog {
+  id            String     @id @default(cuid())
+  runType       RunType
+  outcome       RunOutcome
+  summary       String
+  inserted      Int        @default(0)
+  updated       Int        @default(0)
+  skipped       Int        @default(0)
+  durationMs    Int
+  sourcePath    String?
+  errorMessage  String?
+  createdAt     DateTime   @default(now())
+
+  @@index([runType])
+  @@index([createdAt(sort: Desc)])
 }
