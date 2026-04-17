@@ -9,8 +9,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // `DIRECT_URL` is used by `prisma migrate` / `db push`. On serverless
+  // Postgres providers (Neon, Supabase) the pooled connection in
+  // `DATABASE_URL` does not support DDL, so migrations need a direct one.
+  // Locally, if unset, Prisma falls back to `DATABASE_URL`.
+  directUrl = env("DIRECT_URL")
 }
 
 // -----------------------------------------------------------------------------
