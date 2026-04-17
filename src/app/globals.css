@@ -3,57 +3,116 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: dark;
+  }
+
   html,
   body {
     height: 100%;
     background-color: theme("colors.bg.base");
     color: theme("colors.fg.primary");
-    font-feature-settings: "cv11", "ss01", "ss03";
+    font-feature-settings:
+      "cv11" 1,
+      "ss01" 1,
+      "ss03" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Tabular numerals inside tables by default — easier to scan columns. */
+  table {
+    font-variant-numeric: tabular-nums;
   }
 
   ::selection {
-    background: rgba(79, 140, 255, 0.25);
+    background: theme("colors.accent.ring");
+    color: theme("colors.fg.primary");
   }
 
-  /* Scrollbar (subtle, desktop-only) */
+  /* Visible keyboard focus only. Pointer clicks stay clean. */
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: 2px solid theme("colors.accent.DEFAULT");
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Subtle, desktop-only scrollbars. */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #2A333D transparent;
+    scrollbar-color: theme("colors.border.strong") transparent;
   }
   *::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   *::-webkit-scrollbar-thumb {
-    background: #2A333D;
+    background: theme("colors.border.strong");
     border-radius: 6px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background: #3A4451;
+    background: theme("colors.border.strongest");
     background-clip: padding-box;
     border: 2px solid transparent;
+  }
+
+  hr {
+    border-color: theme("colors.border.subtle");
   }
 }
 
 @layer components {
   .panel {
-    @apply bg-bg-panel border border-border-subtle rounded-md;
+    @apply rounded-lg border border-border-subtle bg-bg-panel;
   }
-  .panel-hover {
-    @apply hover:border-border-strong hover:bg-bg-raised transition-colors;
+  .panel-elevated {
+    @apply rounded-lg border border-border-subtle bg-bg-raised;
   }
   .kbd {
-    @apply inline-flex items-center justify-center min-w-[1.25rem] h-[1.25rem] px-1 rounded
-      text-2xs font-mono text-fg-secondary bg-bg-raised border border-border-subtle;
+    @apply inline-flex items-center justify-center min-w-[1.25rem] h-[1.25rem] px-1
+      rounded text-2xs font-mono text-fg-secondary bg-bg-raised border border-border-subtle;
   }
   .stat-label {
-    @apply text-2xs uppercase tracking-[0.08em] text-fg-muted font-medium;
+    @apply text-2xs uppercase tracking-[0.09em] text-fg-muted font-medium;
   }
   .stat-value {
-    @apply text-2xl font-semibold text-fg-primary tabular-nums;
+    @apply text-[22px] font-semibold leading-none text-fg-primary tabular-nums tracking-tight;
+  }
+  .section-label {
+    @apply text-2xs font-medium uppercase tracking-[0.09em] text-fg-muted;
+  }
+
+  /* Premium table treatment. */
+  .tbl {
+    @apply w-full text-[12.5px];
+  }
+  .tbl thead th {
+    @apply px-4 py-2.5 text-left text-2xs font-medium uppercase tracking-[0.09em]
+      text-fg-muted bg-bg-panel;
+  }
+  .tbl tbody td {
+    @apply px-4 py-2.5 align-middle;
+  }
+  .tbl tbody tr {
+    @apply border-t border-border-subtle/70 transition-colors;
+  }
+  .tbl tbody tr:first-child {
+    @apply border-t-0;
+  }
+  .tbl tbody tr:hover {
+    @apply bg-bg-hover;
+  }
+  .tbl-clickable tbody tr {
+    @apply cursor-pointer;
+  }
+  .tbl-clickable tbody tr:hover {
+    @apply bg-bg-hover;
+    box-shadow: inset 2px 0 0 0 theme("colors.accent.DEFAULT");
   }
 }
