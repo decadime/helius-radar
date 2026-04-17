@@ -1,0 +1,70 @@
+// Prisma schema for Helius Radar
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// A company or protocol observed in the candidate universe.
+model Account {
+  id          String   @id @default(cuid())
+  name        String
+  domain      String?  @unique
+  segment     String?
+  chain       String?
+  stage       String?
+  hqRegion    String?
+  employees   Int?
+  description String?
+
+  tracked     Boolean  @default(false)
+  score       Float?
+
+  signals     Signal[]
+  targets     DailyTarget[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tracked])
+  @@index([segment])
+}
+
+// A discrete event observed about an account (funding, hiring, on-chain, etc).
+model Signal {
+  id         String   @id @default(cuid())
+  accountId  String
+  account    Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  kind       String
+  source     String?
+  summary    String
+  url        String?
+  weight     Float    @default(1)
+  observedAt DateTime @default(now())
+
+  @@index([accountId])
+  @@index([observedAt])
+}
+
+// A daily shortlist of accounts worth reaching out to.
+model DailyTarget {
+  id          String   @id @default(cuid())
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  forDate     DateTime
+  rank        Int
+  rationale   String?
+  status      String   @default("open") // open | working | won | passed
+
+  createdAt   DateTime @default(now())
+
+  @@unique([accountId, forDate])
+  @@index([forDate])
+}
