@@ -24,3 +24,4 @@ prisma/*.db-journal
 data/imports/candidates.vcs.json
 data/imports/candidates.defillama.json
 data/imports/candidates.helius.json
+.vercel
