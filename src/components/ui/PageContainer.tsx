@@ -33,7 +33,7 @@ export function PageContainer({
             </div>
           ) : null}
           {(title || actions) && (
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
               <div className="min-w-0">
                 {title ? (
                   <h2 className="text-[20px] font-semibold leading-tight tracking-tight text-fg-primary">
@@ -47,7 +47,7 @@ export function PageContainer({
                 ) : null}
               </div>
               {actions ? (
-                <div className="flex shrink-0 items-center gap-2">{actions}</div>
+                <div className="flex flex-wrap items-center gap-2">{actions}</div>
               ) : null}
             </div>
           )}

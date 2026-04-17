@@ -5,32 +5,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Helius-branded dark theme. Palette sourced from helius.dev:
+        // warm-dark backgrounds paired with an orange-red accent
+        // (#EA4E33 / #EE6F59 / #FF664D) and Helius's green (#22C55E) for
+        // "ok" states.
         bg: {
-          base: "#0A0C10",
-          panel: "#10141A",
-          raised: "#161B22",
-          hover: "#1B2129",
-          elevated: "#1E242D",
+          base: "#050506",
+          panel: "#0E0E11",
+          raised: "#17171C",
+          hover: "#1D1D23",
+          elevated: "#22222A",
         },
         border: {
-          subtle: "#222A34",
-          strong: "#2E3842",
-          strongest: "#3A4654",
+          subtle: "#2A2A33",
+          strong: "#3E3E47",
+          strongest: "#55555F",
         },
         fg: {
-          primary: "#E8ECF2",
-          secondary: "#A4ADBB",
-          muted: "#6E7787",
-          faint: "#454C56",
+          primary: "#E8E8EE",
+          secondary: "#A0A0AA",
+          muted: "#7D7D8C",
+          faint: "#3E3E47",
         },
         accent: {
-          DEFAULT: "#4F8CFF",
-          hover: "#6AA1FF",
-          subtle: "#1A2540",
-          ring: "rgba(79, 140, 255, 0.35)",
+          DEFAULT: "#EA4E33",
+          hover: "#FF664D",
+          subtle: "#32120D",
+          ring: "rgba(234, 78, 51, 0.35)",
         },
         status: {
-          ok: "#3DCC89",
+          ok: "#22C55E",
           warn: "#E8B33C",
           err: "#E8553C",
         },

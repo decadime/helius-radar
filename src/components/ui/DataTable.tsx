@@ -44,7 +44,7 @@ export function DataTable<T>({
         </div>
       ) : null}
 
-      <table className={cn("tbl", clickable && "tbl-clickable")}>
+      <table className={cn("tbl min-w-[720px]", clickable && "tbl-clickable")}>
         <thead className="sticky top-0 z-10">
           <tr className="border-b border-border-subtle">
             {columns.map((col) => (

@@ -9,7 +9,7 @@
     "identificationScore": 0.94,
     "confidence": 0.9,
     "heliusFitSummary": "Routing + perps imply heavy RPC load and deep transaction parsing needs.",
-    "recommendedWedge": "Staked RPC",
+    "recommendedWedge": "Dedicated Nodes",
     "source": "ecosystem-map",
     "sourceUrl": "https://solana.com/ecosystem"
   },
@@ -23,7 +23,7 @@
     "identificationScore": 0.9,
     "confidence": 0.88,
     "heliusFitSummary": "Latency-sensitive matching and risk engine — staked RPC + priority fees fit.",
-    "recommendedWedge": "Priority Fees API",
+    "recommendedWedge": "Priority Fee API",
     "source": "ecosystem-map"
   },
   {
@@ -75,7 +75,7 @@
     "identificationScore": 0.84,
     "confidence": 0.8,
     "heliusFitSummary": "Execution speed + order flow parsing favors enhanced txn APIs.",
-    "recommendedWedge": "Enhanced Transactions API",
+    "recommendedWedge": "Enhanced Transactions",
     "source": "ecosystem-map"
   },
   {
@@ -88,7 +88,7 @@
     "identificationScore": 0.79,
     "confidence": 0.76,
     "heliusFitSummary": "Balance + activity enrichment at consumer scale — Enhanced Txns + webhooks.",
-    "recommendedWedge": "Enhanced Transactions API",
+    "recommendedWedge": "Enhanced Transactions",
     "source": "public-research"
   },
   {
@@ -127,7 +127,7 @@
     "identificationScore": 0.7,
     "confidence": 0.65,
     "heliusFitSummary": "Publisher infra + cross-chain bridge reliability — staked RPC + LaserStream.",
-    "recommendedWedge": "Staked RPC",
+    "recommendedWedge": "Dedicated Nodes",
     "source": "ecosystem-map"
   },
   {
@@ -179,7 +179,7 @@
     "identificationScore": 0.64,
     "confidence": 0.6,
     "heliusFitSummary": "Orderbook + liquidation latency — staked RPC and priority fees.",
-    "recommendedWedge": "Priority Fees API",
+    "recommendedWedge": "Priority Fee API",
     "source": "ecosystem-map"
   },
   {
