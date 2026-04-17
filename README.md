@@ -152,8 +152,6 @@ npm run generate:targets
 npm run dev
 ```
 
-Open <http://localhost:3000>.
-
 ### Optional: LLM enrichment via OpenRouter
 
 ```bash
