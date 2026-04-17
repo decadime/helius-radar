@@ -12,6 +12,7 @@ const HEADERS = [
   "segment",
   "why_now",
   "recommended_wedge",
+  "rpc_provider",
   "next_action",
   "status",
 ];
@@ -31,6 +32,7 @@ export async function GET(req: NextRequest) {
       t.account.segment,
       t.whyNow ?? "",
       t.recommendedWedge ?? "",
+      t.account.rpcProvider ?? "",
       t.nextAction ?? "",
       prettifyEnum(t.status),
     ])

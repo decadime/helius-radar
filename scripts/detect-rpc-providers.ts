@@ -24,6 +24,7 @@
 import { PrismaClient, RpcProvider } from "@prisma/client";
 import {
   detectProviderInBundle,
+  isCompetitorProvider,
   providerDisplay,
 } from "../src/lib/rpc-providers";
 import { writeRunLog } from "./_lib/run-log";
@@ -282,13 +283,52 @@ async function main() {
 
   const results = await detectAll(scannable, args.verbose);
 
-  // Persist detections
+  // Persist detections + emit a Signal the first time we observe a
+  // competitor RPC (or when the provider changes). The Signal's unique
+  // constraint on (accountId, title, detectedAt) naturally idempotentizes
+  // repeated scans at the same wall-clock instant.
   const scannedAt = new Date();
+  let signalsEmitted = 0;
+
   for (const r of results) {
+    const existing = await prisma.account.findUnique({
+      where: { id: r.accountId },
+      select: { rpcProvider: true, companyName: true },
+    });
+
     await prisma.account.update({
       where: { id: r.accountId },
       data: { rpcProvider: r.provider, rpcDetectedAt: scannedAt },
     });
+
+    const isNewCompetitorDetection =
+      isCompetitorProvider(r.provider) && existing?.rpcProvider !== r.provider;
+
+    if (isNewCompetitorDetection) {
+      const display = providerDisplay(r.provider);
+      const title =
+        existing?.rpcProvider && isCompetitorProvider(existing.rpcProvider)
+          ? `RPC migrated: ${providerDisplay(existing.rpcProvider)} → ${display}`
+          : `Running on ${display} RPC`;
+      try {
+        await prisma.signal.create({
+          data: {
+            accountId: r.accountId,
+            signalType: "TECH_CHANGE",
+            title,
+            summary: `Detected via frontend-bundle scan. Direct displacement target for Helius.`,
+            detectedAt: scannedAt,
+            confidence: 0.85,
+            impactScore: 0.75,
+          },
+        });
+        signalsEmitted++;
+      } catch {
+        // Unique-constraint collision on (accountId, title, detectedAt)
+        // means we've already emitted this exact signal in this run —
+        // safe to ignore.
+      }
+    }
   }
 
   // Summary counts
@@ -311,7 +351,8 @@ async function main() {
   console.log(`\n  Displacement targets:        ${competitors.length}`);
   console.log(`  Already on Helius:           ${counts.get(RpcProvider.HELIUS) ?? 0}`);
   console.log(`  Proxied (provider hidden):   ${counts.get(RpcProvider.PROXIED) ?? 0}`);
-  console.log(`  Unknown (server-side/other): ${counts.get(RpcProvider.UNKNOWN) ?? 0}\n`);
+  console.log(`  Unknown (server-side/other): ${counts.get(RpcProvider.UNKNOWN) ?? 0}`);
+  console.log(`  TECH_CHANGE signals emitted: ${signalsEmitted}\n`);
 
   await writeRunLog(prisma, {
     runType: "CANDIDATE_DISCOVERY",
@@ -319,8 +360,10 @@ async function main() {
     summary:
       `RPC scan: ${results.length} accounts, ` +
       `${competitors.length} displacement targets, ` +
+      `${signalsEmitted} signals emitted, ` +
       `${counts.get(RpcProvider.HELIUS) ?? 0} on Helius`,
     updated: results.length,
+    inserted: signalsEmitted,
     durationMs: Date.now() - start,
   });
 }

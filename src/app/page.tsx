@@ -1,6 +1,8 @@
 import Link from "next/link";
 import {
   getAccountCounts,
+  getCompetitorRpcCount,
+  getCompetitorRpcDistribution,
   getRecentSignals,
   getSignalsCountSince,
   getTargetsForDate,
@@ -8,12 +10,18 @@ import {
 } from "@/lib/queries";
 import { addDays, todayUTC } from "@/lib/date";
 import { formatCount, isoDateUTC } from "@/lib/format";
+import type { RpcProvider } from "@/lib/enums";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { StatCard, StatGrid } from "@/components/ui/StatCard";
 import { Panel, EmptyState } from "@/components/ui/Panel";
-import { TargetStatusBadge, WedgeBadge } from "@/components/ui/Badges";
+import {
+  RpcProviderBadge,
+  TargetStatusBadge,
+  WedgeBadge,
+} from "@/components/ui/Badges";
 import { DataTable, type Column } from "@/components/ui/DataTable";
 import { WedgeBars } from "@/components/dashboard/WedgeBar";
+import { CompetitorRpcBars } from "@/components/dashboard/CompetitorRpcBars";
 import {
   SignalList,
   type SignalListItem,
@@ -30,20 +38,30 @@ type PriorityRow = {
   wedge: string | null;
   nextAction: string;
   status: string;
+  rpcProvider: RpcProvider | null;
 };
 
 async function getDashboardData() {
   const today = todayUTC();
   const sevenDaysAgo = addDays(today, -7);
 
-  const [counts, signalsLast7d, targets, recentSignalsRaw, wedges] =
-    await Promise.all([
-      getAccountCounts(),
-      getSignalsCountSince(sevenDaysAgo),
-      getTargetsForDate(today, 5),
-      getRecentSignals(5),
-      getWedgeDistribution(8),
-    ]);
+  const [
+    counts,
+    signalsLast7d,
+    targets,
+    recentSignalsRaw,
+    wedges,
+    displacementTotal,
+    competitorRpcRows,
+  ] = await Promise.all([
+    getAccountCounts(),
+    getSignalsCountSince(sevenDaysAgo),
+    getTargetsForDate(today, 5),
+    getRecentSignals(5),
+    getWedgeDistribution(8),
+    getCompetitorRpcCount(),
+    getCompetitorRpcDistribution(),
+  ]);
 
   const priorities: PriorityRow[] = targets.map((t) => ({
     id: t.id,
@@ -54,6 +72,7 @@ async function getDashboardData() {
     wedge: t.recommendedWedge,
     nextAction: t.nextAction ?? "—",
     status: t.status,
+    rpcProvider: t.account.rpcProvider,
   }));
 
   const recentSignals: SignalListItem[] = recentSignalsRaw.map((s) => ({
@@ -66,7 +85,15 @@ async function getDashboardData() {
     account: s.account,
   }));
 
-  return { counts, signalsLast7d, priorities, recentSignals, wedges };
+  return {
+    counts,
+    signalsLast7d,
+    priorities,
+    recentSignals,
+    wedges,
+    displacementTotal,
+    competitorRpcRows,
+  };
 }
 
 const priorityColumns: Column<PriorityRow>[] = [
@@ -105,6 +132,11 @@ const priorityColumns: Column<PriorityRow>[] = [
       ),
   },
   {
+    key: "rpc",
+    header: "RPC",
+    render: (r) => <RpcProviderBadge value={r.rpcProvider} />,
+  },
+  {
     key: "nextAction",
     header: "Next action",
     render: (r) => <span className="text-fg-secondary">{r.nextAction}</span>,
@@ -117,8 +149,15 @@ const priorityColumns: Column<PriorityRow>[] = [
 ];
 
 export default async function DashboardPage() {
-  const { counts, signalsLast7d, priorities, recentSignals, wedges } =
-    await getDashboardData();
+  const {
+    counts,
+    signalsLast7d,
+    priorities,
+    recentSignals,
+    wedges,
+    displacementTotal,
+    competitorRpcRows,
+  } = await getDashboardData();
   const today = isoDateUTC();
 
   return (
@@ -160,7 +199,7 @@ export default async function DashboardPage() {
         />
       </StatGrid>
 
-      <StatGrid cols={2}>
+      <StatGrid cols={3}>
         <StatCard
           label="Signals · last 7d"
           value={formatCount(signalsLast7d)}
@@ -170,6 +209,12 @@ export default async function DashboardPage() {
           label="Daily targets · today"
           value={formatCount(priorities.length)}
           hint={today}
+        />
+        <StatCard
+          label="Displacement pipeline"
+          value={formatCount(displacementTotal)}
+          hint="on competitor RPC"
+          tone={displacementTotal > 0 ? "up" : "neutral"}
         />
       </StatGrid>
 
@@ -221,16 +266,40 @@ export default async function DashboardPage() {
           )}
         </Panel>
 
-        <Panel title="Top wedges" subtitle="Recommended wedge distribution">
-          {wedges.length === 0 ? (
-            <EmptyState
-              title="No wedges yet"
-              description="Populated as accounts receive a recommended Helius product wedge."
-            />
-          ) : (
-            <WedgeBars rows={wedges} />
-          )}
-        </Panel>
+        <div className="space-y-6">
+          <Panel
+            title="Competitor RPC landscape"
+            subtitle="Known displacement targets"
+            actions={
+              <Link
+                href="/universe?rpc=competitor"
+                className="text-[12px] text-fg-secondary hover:text-fg-primary"
+              >
+                View all →
+              </Link>
+            }
+          >
+            {competitorRpcRows.length === 0 ? (
+              <EmptyState
+                title="No competitor RPCs detected"
+                description="Run npm run detect:rpc to scan candidate frontends and populate this panel."
+              />
+            ) : (
+              <CompetitorRpcBars rows={competitorRpcRows} />
+            )}
+          </Panel>
+
+          <Panel title="Top wedges" subtitle="Recommended wedge distribution">
+            {wedges.length === 0 ? (
+              <EmptyState
+                title="No wedges yet"
+                description="Populated as accounts receive a recommended Helius product wedge."
+              />
+            ) : (
+              <WedgeBars rows={wedges} />
+            )}
+          </Panel>
+        </div>
       </div>
     </PageContainer>
   );

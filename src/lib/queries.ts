@@ -8,6 +8,7 @@
 import { prisma } from "./prisma";
 import { Segment, TrackStatus } from "./enums";
 import { addDays } from "./date";
+import { COMPETITOR_RPC_PROVIDERS } from "./rpc-providers";
 
 // ─── Enum guards ──────────────────────────────────────────────────────────────
 
@@ -35,6 +36,28 @@ export async function getAccountCounts(): Promise<AccountCounts> {
     prisma.account.count({ where: { trackStatus: TrackStatus.REJECTED } }),
   ]);
   return { total, tracked, watchlist, rejected };
+}
+
+/** Accounts observed running on any Helius competitor RPC. */
+export function getCompetitorRpcCount() {
+  return prisma.account.count({
+    where: { rpcProvider: { in: [...COMPETITOR_RPC_PROVIDERS] } },
+  });
+}
+
+/** Ranked breakdown of displacement targets by competitor. */
+export async function getCompetitorRpcDistribution() {
+  const groups = await prisma.account.groupBy({
+    by: ["rpcProvider"],
+    where: { rpcProvider: { in: [...COMPETITOR_RPC_PROVIDERS] } },
+    _count: { _all: true },
+  });
+  return groups
+    .map((g) => ({
+      provider: g.rpcProvider!,
+      count: g._count._all,
+    }))
+    .sort((a, b) => b.count - a.count);
 }
 
 export function getSignalsCountSince(since: Date) {
@@ -81,7 +104,13 @@ export function getTargetsForDate(date: Date, limit?: number) {
       recommendedWedge: true,
       nextAction: true,
       status: true,
-      account: { select: { companyName: true, segment: true } },
+      account: {
+        select: {
+          companyName: true,
+          segment: true,
+          rpcProvider: true,
+        },
+      },
     },
   });
 }
@@ -107,17 +136,6 @@ export function normalizeUniverseFilters(raw: {
     competitorRpc: raw.rpc === "competitor",
   };
 }
-
-const COMPETITOR_RPC_PROVIDERS = [
-  "ALCHEMY",
-  "QUICKNODE",
-  "SYNDICA",
-  "TRITON",
-  "SHYFT",
-  "ANKR",
-  "CHAINSTACK",
-  "PUBLIC_SOLANA",
-] as const;
 
 export function getUniverse({ segment, status, competitorRpc }: UniverseFilters) {
   return prisma.account.findMany({

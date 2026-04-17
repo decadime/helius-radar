@@ -115,7 +115,11 @@ export function detectProviderInBundle(content: string): RpcProvider | null {
 
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
-const COMPETITORS = new Set<RpcProvider>([
+/**
+ * Providers we consider displacement targets. Exported as an array so
+ * queries.ts can use it directly in Prisma `in` filters.
+ */
+export const COMPETITOR_RPC_PROVIDERS: readonly RpcProvider[] = [
   RpcProvider.ALCHEMY,
   RpcProvider.QUICKNODE,
   RpcProvider.SYNDICA,
@@ -124,7 +128,9 @@ const COMPETITORS = new Set<RpcProvider>([
   RpcProvider.ANKR,
   RpcProvider.CHAINSTACK,
   RpcProvider.PUBLIC_SOLANA,
-]);
+];
+
+const COMPETITORS = new Set<RpcProvider>(COMPETITOR_RPC_PROVIDERS);
 
 export function isCompetitorProvider(provider: RpcProvider | null | undefined): boolean {
   return provider !== null && provider !== undefined && COMPETITORS.has(provider);
