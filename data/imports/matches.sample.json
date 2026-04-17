@@ -1,0 +1,137 @@
+[
+  {
+    "domain": "jup.ag",
+    "heliusProduct": "DEDICATED_NODES",
+    "matchScore": 0.95,
+    "primaryMatch": true,
+    "rationale": "Routing + perps push heavy, consistent RPC load across many endpoints; dedicated nodes remove rate-limit exposure during burst and launch windows."
+  },
+  {
+    "domain": "jup.ag",
+    "heliusProduct": "ENHANCED_TXNS",
+    "matchScore": 0.8,
+    "rationale": "Decoded swap paths and multi-hop transfer enrichment simplify aggregator UX and ops tooling."
+  },
+  {
+    "domain": "drift.trade",
+    "heliusProduct": "SENDER",
+    "matchScore": 0.94,
+    "primaryMatch": true,
+    "rationale": "Perpetuals matching tolerates no tail latency; Sender guarantees faster, more deterministic transaction landing under volatility."
+  },
+  {
+    "domain": "drift.trade",
+    "heliusProduct": "SHRED_DELIVERY",
+    "matchScore": 0.84,
+    "rationale": "Raw shred access gives the quant / keeper stack the earliest possible mempool signal."
+  },
+  {
+    "domain": "drift.trade",
+    "heliusProduct": "PRIORITY_FEES",
+    "matchScore": 0.78,
+    "rationale": "Dynamic priority-fee guidance improves inclusion rates for keeper flow and liquidations."
+  },
+  {
+    "domain": "kamino.finance",
+    "heliusProduct": "WEBHOOKS",
+    "matchScore": 0.9,
+    "primaryMatch": true,
+    "rationale": "Vault rebalancing and lending-position events are high-value webhook surfaces."
+  },
+  {
+    "domain": "kamino.finance",
+    "heliusProduct": "LASERSTREAM",
+    "matchScore": 0.78,
+    "rationale": "Sub-ms account-state streaming is ideal for liquidation-window monitoring."
+  },
+  {
+    "domain": "marginfi.com",
+    "heliusProduct": "LASERSTREAM",
+    "matchScore": 0.9,
+    "primaryMatch": true,
+    "rationale": "Liquidation-keeper infrastructure depends directly on low-latency account streams."
+  },
+  {
+    "domain": "marginfi.com",
+    "heliusProduct": "PRIORITY_FEES",
+    "matchScore": 0.77,
+    "rationale": "Liquidation inclusion during volatility depends on accurate priority-fee positioning."
+  },
+  {
+    "domain": "magiceden.io",
+    "heliusProduct": "DAS_API",
+    "matchScore": 0.95,
+    "primaryMatch": true,
+    "rationale": "Marketplace breadth across cNFTs and tokens makes DAS the natural indexing surface."
+  },
+  {
+    "domain": "magiceden.io",
+    "heliusProduct": "WEBHOOKS",
+    "matchScore": 0.82,
+    "rationale": "Listing and transfer notifications power downstream reindexing and pricing jobs."
+  },
+  {
+    "domain": "tensor.trade",
+    "heliusProduct": "ENHANCED_TXNS",
+    "matchScore": 0.92,
+    "primaryMatch": true,
+    "rationale": "Complex NFT order flow (bids, pools, compressed) benefits from structured transaction decoding."
+  },
+  {
+    "domain": "tensor.trade",
+    "heliusProduct": "DAS_API",
+    "matchScore": 0.8,
+    "rationale": "Collection metadata, trait indexing, and ownership reads fit the DAS surface directly."
+  },
+  {
+    "domain": "phantom.app",
+    "heliusProduct": "WALLET_API",
+    "matchScore": 0.93,
+    "primaryMatch": true,
+    "rationale": "Balances, transfers, and identity surfaces are exactly the shape of Wallet API — consumer-scale ready."
+  },
+  {
+    "domain": "phantom.app",
+    "heliusProduct": "ENHANCED_TXNS",
+    "matchScore": 0.84,
+    "rationale": "Decoded transaction display is a core wallet UX surface."
+  },
+  {
+    "domain": "phantom.app",
+    "heliusProduct": "WEBSOCKETS_ENHANCED",
+    "matchScore": 0.72,
+    "rationale": "Filtered WSS subscriptions support per-wallet real-time activity feeds."
+  },
+  {
+    "domain": "backpack.app",
+    "heliusProduct": "WALLET_API",
+    "matchScore": 0.88,
+    "primaryMatch": true,
+    "rationale": "Wallet + exchange surfaces need clean balance/history/identity reads at scale."
+  },
+  {
+    "domain": "backpack.app",
+    "heliusProduct": "DAS_API",
+    "matchScore": 0.78,
+    "rationale": "xNFT surfaces lean heavily on compressed NFT reads."
+  },
+  {
+    "domain": "staratlas.com",
+    "heliusProduct": "DAS_API",
+    "matchScore": 0.85,
+    "primaryMatch": true,
+    "rationale": "Game item economies live on compressed NFTs; DAS is the canonical read surface."
+  },
+  {
+    "domain": "staratlas.com",
+    "heliusProduct": "ZK_COMPRESSION",
+    "matchScore": 0.8,
+    "rationale": "Massive on-chain item counts need compressed storage to stay economically viable."
+  },
+  {
+    "domain": "staratlas.com",
+    "heliusProduct": "DEDICATED_NODES",
+    "matchScore": 0.7,
+    "rationale": "Launch-day traffic spikes make private infrastructure the safer floor."
+  }
+]

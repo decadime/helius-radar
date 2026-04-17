@@ -1,0 +1,213 @@
+[
+  {
+    "domain": "jup.ag",
+    "signalType": "PRODUCT_LAUNCH",
+    "title": "Launched Perps v2 on mainnet",
+    "summary": "Perps v2 with cross-margining and improved oracle routing went live.",
+    "sourceUrl": "https://jup.ag/blog/perps-v2",
+    "detectedAt": "2026-04-17T09:05:00.000Z",
+    "confidence": 0.95,
+    "impactScore": 0.9
+  },
+  {
+    "domain": "jup.ag",
+    "signalType": "ONCHAIN_ACTIVITY",
+    "title": "Aggregator routing volume up 38% week-over-week",
+    "summary": "Routing volume grew meaningfully week-over-week after the perps launch.",
+    "detectedAt": "2026-04-12T16:00:00.000Z",
+    "confidence": 0.85,
+    "impactScore": 0.75
+  },
+  {
+    "domain": "jup.ag",
+    "signalType": "HIRING",
+    "title": "Opened 4 senior backend and infra roles",
+    "summary": "Careers page lists 4 new backend and reliability roles, emphasizing Solana RPC experience.",
+    "sourceUrl": "https://jobs.jup.ag",
+    "detectedAt": "2026-03-29T14:00:00.000Z",
+    "confidence": 0.8,
+    "impactScore": 0.7
+  },
+  {
+    "domain": "drift.trade",
+    "signalType": "ONCHAIN_ACTIVITY",
+    "title": "Perpetuals open interest reached all-time high",
+    "summary": "Open interest across DOT, SOL, and ETH perps crossed prior ATH this week.",
+    "detectedAt": "2026-04-16T20:30:00.000Z",
+    "confidence": 0.9,
+    "impactScore": 0.82
+  },
+  {
+    "domain": "drift.trade",
+    "signalType": "FUNDING",
+    "title": "Closed $25M Series B led by Polychain",
+    "summary": "Series B adds runway for cross-margined derivatives expansion.",
+    "sourceUrl": "https://theblock.co/drift-b",
+    "detectedAt": "2026-04-03T12:00:00.000Z",
+    "confidence": 0.95,
+    "impactScore": 0.9
+  },
+  {
+    "domain": "drift.trade",
+    "signalType": "SOCIAL",
+    "title": "Founder posted about RPC reliability pain",
+    "summary": "Founder publicly called out RPC instability during a volatility event on X.",
+    "sourceUrl": "https://x.com/driftprotocol/status/0",
+    "detectedAt": "2026-03-22T18:45:00.000Z",
+    "confidence": 0.7,
+    "impactScore": 0.85
+  },
+  {
+    "domain": "kamino.finance",
+    "signalType": "PRODUCT_LAUNCH",
+    "title": "Lend V2 now live with isolated markets",
+    "summary": "Isolated markets and expanded collateral types shipped with Lend V2.",
+    "detectedAt": "2026-04-15T10:00:00.000Z",
+    "confidence": 0.92,
+    "impactScore": 0.8
+  },
+  {
+    "domain": "kamino.finance",
+    "signalType": "HIRING",
+    "title": "Hired Head of Infra from prior lending protocol",
+    "summary": "New Head of Infra joined from a mature DeFi lending team.",
+    "detectedAt": "2026-04-01T09:30:00.000Z",
+    "confidence": 0.78,
+    "impactScore": 0.65
+  },
+  {
+    "domain": "marginfi.com",
+    "signalType": "ONCHAIN_ACTIVITY",
+    "title": "Liquidation events spiked during SOL volatility window",
+    "summary": "Cluster of liquidations during the April 14 volatility window stressed keeper infra.",
+    "detectedAt": "2026-04-14T22:10:00.000Z",
+    "confidence": 0.88,
+    "impactScore": 0.78
+  },
+  {
+    "domain": "marginfi.com",
+    "signalType": "PARTNERSHIP",
+    "title": "Integrated with Kamino vaults for yield routing",
+    "summary": "Announced mutual integration to route lending deposits into Kamino vaults.",
+    "detectedAt": "2026-03-30T15:00:00.000Z",
+    "confidence": 0.8,
+    "impactScore": 0.6
+  },
+  {
+    "domain": "magiceden.io",
+    "signalType": "PRODUCT_LAUNCH",
+    "title": "Launched compressed NFT surfaces across marketplace",
+    "summary": "Expanded cNFT support across collection pages and wallet views.",
+    "detectedAt": "2026-04-17T11:00:00.000Z",
+    "confidence": 0.9,
+    "impactScore": 0.82
+  },
+  {
+    "domain": "magiceden.io",
+    "signalType": "PRESS",
+    "title": "Featured in The Block on Solana NFT resurgence",
+    "summary": "Long-form coverage positions ME as the anchor marketplace.",
+    "sourceUrl": "https://theblock.co/nft-resurgence",
+    "detectedAt": "2026-04-10T08:45:00.000Z",
+    "confidence": 0.7,
+    "impactScore": 0.5
+  },
+  {
+    "domain": "magiceden.io",
+    "signalType": "HIRING",
+    "title": "Posted 3 data infrastructure roles",
+    "summary": "Indexing, pipelines, and ETL specialist roles all opened in the same week.",
+    "detectedAt": "2026-03-25T13:00:00.000Z",
+    "confidence": 0.82,
+    "impactScore": 0.7
+  },
+  {
+    "domain": "tensor.trade",
+    "signalType": "ONCHAIN_ACTIVITY",
+    "title": "Weekly trade volume crossed $120M",
+    "summary": "Highest weekly volume in the past quarter, driven by several blue-chip collection launches.",
+    "detectedAt": "2026-04-13T17:20:00.000Z",
+    "confidence": 0.88,
+    "impactScore": 0.78
+  },
+  {
+    "domain": "tensor.trade",
+    "signalType": "SOCIAL",
+    "title": "Founder tweeted about transaction parsing headaches",
+    "summary": "Thread detailed pain with third-party txn parsing around complex NFT listings.",
+    "detectedAt": "2026-04-02T19:30:00.000Z",
+    "confidence": 0.72,
+    "impactScore": 0.82
+  },
+  {
+    "domain": "phantom.app",
+    "signalType": "PRODUCT_LAUNCH",
+    "title": "Shipped in-wallet Swap v3",
+    "summary": "Swap v3 with improved routing and per-transaction cost transparency.",
+    "detectedAt": "2026-04-16T09:00:00.000Z",
+    "confidence": 0.93,
+    "impactScore": 0.75
+  },
+  {
+    "domain": "phantom.app",
+    "signalType": "FUNDING",
+    "title": "Raised at reported $3B valuation",
+    "summary": "Follow-on financing per press coverage — specifics not yet confirmed.",
+    "sourceUrl": "https://fortune.com/phantom-round",
+    "detectedAt": "2026-03-28T12:00:00.000Z",
+    "confidence": 0.65,
+    "impactScore": 0.8
+  },
+  {
+    "domain": "backpack.app",
+    "signalType": "PRODUCT_LAUNCH",
+    "title": "Backpack Exchange rolled out to select US users",
+    "summary": "Centralized exchange surface now live for a waitlisted cohort.",
+    "detectedAt": "2026-04-11T16:00:00.000Z",
+    "confidence": 0.9,
+    "impactScore": 0.7
+  },
+  {
+    "domain": "backpack.app",
+    "signalType": "HIRING",
+    "title": "Senior wallet infrastructure role posted",
+    "summary": "Role explicitly calls out experience with Solana transaction parsing and webhooks.",
+    "detectedAt": "2026-03-20T10:15:00.000Z",
+    "confidence": 0.8,
+    "impactScore": 0.6
+  },
+  {
+    "domain": "jito.network",
+    "signalType": "PARTNERSHIP",
+    "title": "Block engine integration announced with major DEX",
+    "summary": "Expands bundle submission surface — adjacent but not directly competitive.",
+    "detectedAt": "2026-04-09T15:00:00.000Z",
+    "confidence": 0.75,
+    "impactScore": 0.5
+  },
+  {
+    "domain": "staratlas.com",
+    "signalType": "PRODUCT_LAUNCH",
+    "title": "Sage Labs mini-app released to public",
+    "summary": "New crafting loop released publicly. Expected to increase on-chain item activity.",
+    "detectedAt": "2026-04-15T14:00:00.000Z",
+    "confidence": 0.82,
+    "impactScore": 0.7
+  },
+  {
+    "domain": "staratlas.com",
+    "signalType": "ONCHAIN_ACTIVITY",
+    "title": "In-game economy transactions up after Sage update",
+    "summary": "Daily active wallets and item transfer volumes noticeably higher post-update.",
+    "detectedAt": "2026-03-18T19:00:00.000Z",
+    "confidence": 0.7,
+    "impactScore": 0.55
+  },
+  {
+    "domain": "ghost-protocol.xyz",
+    "signalType": "FUNDING",
+    "title": "Unknown account — intentional bad domain",
+    "summary": "Included in the sample to demonstrate the skip-with-warning path.",
+    "detectedAt": "2026-04-05T00:00:00.000Z"
+  }
+]
