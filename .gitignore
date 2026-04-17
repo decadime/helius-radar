@@ -9,6 +9,7 @@ dist/
 
 *.log
 .DS_Store
+*.tsbuildinfo
 
 # Prisma / SQLite
 prisma/dev.db
