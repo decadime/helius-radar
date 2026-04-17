@@ -20,6 +20,7 @@
     "discover:defillama": "tsx scripts/discover-defillama.ts",
     "discover:helius": "tsx scripts/discover-helius.ts",
     "discover:all": "npm run discover:defillama && npm run discover:vcs && npm run discover:helius",
+    "detect:rpc": "tsx scripts/detect-rpc-providers.ts",
 
     "import:candidates": "tsx scripts/import-candidates.ts",
     "import:signals": "tsx scripts/import-signals.ts",

@@ -38,17 +38,40 @@ describe("matchClarity", () => {
 });
 
 describe("compositeScore", () => {
-  it("weights components 0.3/0.3/0.2/0.2", () => {
-    const score = compositeScore({ id: 1, fresh: 1, impact: 1, match: 1 });
+  it("weights components 0.25 / 0.25 / 0.20 / 0.20 / 0.10 to sum to 1.0", () => {
+    const score = compositeScore({ id: 1, fresh: 1, impact: 1, match: 1, rpc: 1 });
     expect(score).toBeCloseTo(1.0, 5);
   });
-  it("zeros components contribute zero", () => {
-    const score = compositeScore({ id: 0, fresh: 0, impact: 0, match: 0 });
-    expect(score).toBe(0);
+  it("zeros contribute zero", () => {
+    expect(compositeScore({ id: 0, fresh: 0, impact: 0, match: 0, rpc: 0 })).toBe(0);
   });
-  it("mixes components per weights", () => {
-    const score = compositeScore({ id: 1, fresh: 0, impact: 0, match: 0 });
-    expect(score).toBeCloseTo(0.3, 5);
+  it("id alone contributes 0.25", () => {
+    expect(
+      compositeScore({ id: 1, fresh: 0, impact: 0, match: 0, rpc: 0 })
+    ).toBeCloseTo(0.25, 5);
+  });
+  it("fresh alone contributes 0.25", () => {
+    expect(
+      compositeScore({ id: 0, fresh: 1, impact: 0, match: 0, rpc: 0 })
+    ).toBeCloseTo(0.25, 5);
+  });
+  it("impact alone contributes 0.20", () => {
+    expect(
+      compositeScore({ id: 0, fresh: 0, impact: 1, match: 0, rpc: 0 })
+    ).toBeCloseTo(0.2, 5);
+  });
+  it("match alone contributes 0.20", () => {
+    expect(
+      compositeScore({ id: 0, fresh: 0, impact: 0, match: 1, rpc: 0 })
+    ).toBeCloseTo(0.2, 5);
+  });
+  it("rpc alone contributes 0.10", () => {
+    expect(
+      compositeScore({ id: 0, fresh: 0, impact: 0, match: 0, rpc: 1 })
+    ).toBeCloseTo(0.1, 5);
+  });
+  it("rpc defaults to 0 when omitted — existing 4-component callers stay stable", () => {
+    expect(compositeScore({ id: 1, fresh: 1, impact: 1, match: 1 })).toBeCloseTo(0.9, 5);
   });
 });
 

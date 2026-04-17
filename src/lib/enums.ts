@@ -10,4 +10,5 @@ export {
   TargetStatus,
   RunType,
   RunOutcome,
+  RpcProvider,
 } from "@prisma/client";

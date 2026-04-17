@@ -6,21 +6,26 @@
 // the LLM. Any LLM failure (network, parse, schema) leaves the rule-based
 // text in place — the queue is never blocked by model availability.
 
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient, RpcProvider } from "@prisma/client";
 import { TargetStatus } from "./enums";
 import { addDays, daysSince } from "./date";
 import { prettifyProduct } from "./bdView";
 import { enrichTargetPick, type TargetPickContext } from "./enrichment";
 import { isLLMEnabled } from "./llm";
+import { displacementScore } from "./rpc-providers";
 
 const TOP_N = 10;
 
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
-const W_ID = 0.3;
-const W_FRESH = 0.3;
+// Weights sum to 1.00. Rebalanced from the original 4-component formula to
+// reward accounts that are observably on a competitor RPC — the cleanest
+// BD pitch surface Radar produces.
+const W_ID = 0.25;
+const W_FRESH = 0.25;
 const W_IMPACT = 0.2;
 const W_MATCH = 0.2;
+const W_RPC = 0.1;
 
 /** Calendar-day decay curve: 0d → 1.0, 30d → 0.0. */
 export function freshnessFromDays(days: number | null): number {
@@ -47,9 +52,15 @@ export function compositeScore(parts: {
   fresh: number;
   impact: number;
   match: number;
+  rpc?: number;
 }): number {
+  const rpc = parts.rpc ?? 0;
   return (
-    W_ID * parts.id + W_FRESH * parts.fresh + W_IMPACT * parts.impact + W_MATCH * parts.match
+    W_ID * parts.id +
+    W_FRESH * parts.fresh +
+    W_IMPACT * parts.impact +
+    W_MATCH * parts.match +
+    W_RPC * rpc
   );
 }
 
@@ -124,10 +135,11 @@ export type GeneratedTarget = {
   accountId: string;
   companyName: string;
   score: number;
-  breakdown: { id: number; fresh: number; impact: number; match: number };
+  breakdown: { id: number; fresh: number; impact: number; match: number; rpc: number };
   whyNow: string;
   nextAction: string;
   recommendedWedge: string | null;
+  rpcProvider: RpcProvider | null;
 };
 
 export type GenerateResult = {
@@ -162,6 +174,7 @@ export async function generateTargetsForDate(
       segment: true,
       identificationScore: true,
       recommendedWedge: true,
+      rpcProvider: true,
       signals: {
         orderBy: { detectedAt: "desc" },
         take: 1,
@@ -192,7 +205,8 @@ export async function generateTargetsForDate(
       );
       const impact = latestSignal?.impactScore ?? 0;
       const match = matchClarity(primary, nonPrimaryTop);
-      const score = compositeScore({ id, fresh, impact, match });
+      const rpc = displacementScore(a.rpcProvider);
+      const score = compositeScore({ id, fresh, impact, match, rpc });
       if (score <= 0) return null;
 
       const whyNow = buildWhyNow(latestSignal, a.identificationScore);
@@ -207,10 +221,11 @@ export async function generateTargetsForDate(
         accountId: a.id,
         companyName: a.companyName,
         score,
-        breakdown: { id, fresh, impact, match },
+        breakdown: { id, fresh, impact, match, rpc },
         whyNow,
         nextAction,
         recommendedWedge,
+        rpcProvider: a.rpcProvider,
         _ctx: {
           companyName: a.companyName,
           segment: a.segment,

@@ -96,6 +96,31 @@ enum RunOutcome {
   FAILURE
 }
 
+// Detected RPC provider for an account's frontend. Populated by the
+// detect:rpc-providers script which fetches the app's JS bundles and
+// regex-matches against known provider URL patterns.
+//
+// Competitor values (ALCHEMY, QUICKNODE, SYNDICA, TRITON, SHYFT, ANKR,
+// CHAINSTACK, PUBLIC_SOLANA) are explicit displacement targets for BD.
+// HELIUS means they're already a customer.
+// PROXIED means the app routes RPC through its own domain — provider opaque.
+// UNKNOWN means we scanned the bundle and found no recognizable provider
+// URL (server-side only, or dynamic config loading).
+enum RpcProvider {
+  HELIUS
+  ALCHEMY
+  QUICKNODE
+  SYNDICA
+  TRITON
+  SHYFT
+  ANKR
+  CHAINSTACK
+  PUBLIC_SOLANA
+  PROXIED
+  UNKNOWN
+  OTHER
+}
+
 // -----------------------------------------------------------------------------
 // Models
 // -----------------------------------------------------------------------------
@@ -119,6 +144,10 @@ model Account {
   source              String?
   sourceUrl           String?
 
+  // Detected RPC provider + scan timestamp (see detect:rpc-providers script).
+  rpcProvider         RpcProvider?
+  rpcDetectedAt       DateTime?
+
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
 
@@ -129,6 +158,7 @@ model Account {
   @@index([trackStatus])
   @@index([segment])
   @@index([identificationScore(sort: Desc)])
+  @@index([rpcProvider])
 }
 
 // A discrete event observed about an account.
