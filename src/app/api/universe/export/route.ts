@@ -13,14 +13,15 @@ const HEADERS = [
   "identification_score",
   "confidence",
   "recommended_wedge",
+  "rpc_provider",
   "source",
-  "source_url",
 ];
 
 export async function GET(req: NextRequest) {
   const filters = normalizeUniverseFilters({
     segment: req.nextUrl.searchParams.get("segment") ?? undefined,
     status: req.nextUrl.searchParams.get("status") ?? undefined,
+    rpc: req.nextUrl.searchParams.get("rpc") ?? undefined,
   });
 
   const rows = await getUniverse(filters);
@@ -34,8 +35,8 @@ export async function GET(req: NextRequest) {
       r.identificationScore ?? "",
       r.confidence ?? "",
       r.recommendedWedge ?? "",
+      r.rpcProvider ?? "",
       r.source ?? "",
-      "", // sourceUrl not selected on the list query; fetch on detail if needed
     ])
   );
 

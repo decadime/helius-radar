@@ -1,11 +1,15 @@
 // Pure, deterministic BD view derived from stored data.
 // Designed to be swappable with an AI-backed summarizer later.
 
+import { providerDisplay, isCompetitorProvider } from "./rpc-providers";
+import type { RpcProvider } from "./enums";
+
 export type BdViewInput = {
   segment: string;
   recommendedWedge: string | null;
   description: string | null;
   heliusFitSummary: string | null;
+  rpcProvider?: RpcProvider | null;
   signals: Array<{
     signalType: string;
     title: string;
@@ -57,12 +61,19 @@ const SIGNAL_HINT: Partial<Record<string, string>> = {
 };
 
 export function computeBdView(input: BdViewInput): BdView {
-  const basePain =
-    SEGMENT_PAIN[input.segment] ?? SEGMENT_PAIN.OTHER;
+  const basePain = SEGMENT_PAIN[input.segment] ?? SEGMENT_PAIN.OTHER;
 
   const latest = input.signals[0];
   const hint = latest ? SIGNAL_HINT[latest.signalType] : undefined;
-  const likelyPain = hint ? `${basePain} ${capitalize(hint)}` : basePain;
+
+  // Competitor-RPC detection is the single sharpest pitch surface we have.
+  // When present, prepend it to the pain narrative so it leads the BD view.
+  const rpcLead = isCompetitorProvider(input.rpcProvider)
+    ? `Currently on ${providerDisplay(input.rpcProvider)} — direct displacement candidate. `
+    : "";
+
+  const painBody = hint ? `${basePain} ${capitalize(hint)}` : basePain;
+  const likelyPain = `${rpcLead}${painBody}`;
 
   const primary = input.productMatches.find((m) => m.primaryMatch);
   const topByScore = [...input.productMatches].sort(

@@ -13,6 +13,7 @@ export const dynamic = "force-dynamic";
 type SearchParams = {
   segment?: string;
   status?: string;
+  rpc?: string;
 };
 
 export default async function UniversePage({
@@ -26,6 +27,7 @@ export default async function UniversePage({
   const exportQs = new URLSearchParams();
   if (filters.segment) exportQs.set("segment", filters.segment);
   if (filters.status) exportQs.set("status", filters.status);
+  if (filters.competitorRpc) exportQs.set("rpc", "competitor");
   const exportHref = exportQs.toString()
     ? `/api/universe/export?${exportQs.toString()}`
     : "/api/universe/export";
@@ -43,6 +45,7 @@ export default async function UniversePage({
       <UniverseFilters
         segment={filters.segment}
         status={filters.status}
+        competitorRpc={filters.competitorRpc}
         totalResults={rows.length}
       />
 

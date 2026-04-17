@@ -11,35 +11,44 @@ const STATUS_OPTIONS = ["", ...Object.values(TrackStatus)] as const;
 export function UniverseFilters({
   segment,
   status,
+  competitorRpc,
   totalResults,
 }: {
   segment: string | null;
   status: string | null;
+  competitorRpc: boolean;
   totalResults: number;
 }) {
   const router = useRouter();
   const params = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
+  const buildUrl = useCallback((next: URLSearchParams) => {
+    const qs = next.toString();
+    return qs ? `/universe?${qs}` : "/universe";
+  }, []);
+
   const update = useCallback(
     (key: string, value: string) => {
       const next = new URLSearchParams(params.toString());
       if (!value) next.delete(key);
       else next.set(key, value);
-      const qs = next.toString();
-      startTransition(() => {
-        router.replace(qs ? `/universe?${qs}` : "/universe");
-      });
+      startTransition(() => router.replace(buildUrl(next)));
     },
-    [params, router]
+    [buildUrl, params, router]
   );
 
-  const clear = () =>
-    startTransition(() => {
-      router.replace("/universe");
-    });
+  const toggleCompetitorRpc = () => {
+    const next = new URLSearchParams(params.toString());
+    if (competitorRpc) next.delete("rpc");
+    else next.set("rpc", "competitor");
+    startTransition(() => router.replace(buildUrl(next)));
+  };
 
-  const hasFilters = Boolean(segment || status);
+  const clear = () =>
+    startTransition(() => router.replace("/universe"));
+
+  const hasFilters = Boolean(segment || status || competitorRpc);
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-md border border-border-subtle bg-bg-panel px-3 py-2">
@@ -62,6 +71,22 @@ export function UniverseFilters({
           placeholder="All statuses"
         />
       </Field>
+
+      <div className="h-5 w-px bg-border-subtle" />
+
+      <button
+        type="button"
+        onClick={toggleCompetitorRpc}
+        aria-pressed={competitorRpc}
+        className={cn(
+          "h-7 rounded-md border px-2.5 text-2xs font-medium uppercase tracking-[0.07em] transition-colors",
+          competitorRpc
+            ? "border-status-warn/50 bg-status-warn/10 text-status-warn"
+            : "border-border-subtle bg-bg-raised text-fg-secondary hover:border-border-strong hover:text-fg-primary"
+        )}
+      >
+        On competitor RPC
+      </button>
 
       <div className="ml-auto flex items-center gap-3">
         <span

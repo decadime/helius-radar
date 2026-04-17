@@ -3,8 +3,13 @@
 import { useRouter } from "next/navigation";
 import { DataTable, type Column } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/Panel";
-import { SegmentBadge, TrackStatusBadge } from "@/components/ui/Badges";
+import {
+  RpcProviderBadge,
+  SegmentBadge,
+  TrackStatusBadge,
+} from "@/components/ui/Badges";
 import { formatScore } from "@/lib/format";
+import type { RpcProvider } from "@/lib/enums";
 
 export type UniverseRow = {
   id: string;
@@ -16,6 +21,7 @@ export type UniverseRow = {
   confidence: number | null;
   recommendedWedge: string | null;
   source: string | null;
+  rpcProvider: RpcProvider | null;
 };
 
 export function UniverseTable({ rows }: { rows: UniverseRow[] }) {
@@ -91,6 +97,11 @@ const columns: Column<UniverseRow>[] = [
       ) : (
         <span className="text-fg-muted">—</span>
       ),
+  },
+  {
+    key: "rpcProvider",
+    header: "RPC",
+    render: (r) => <RpcProviderBadge value={r.rpcProvider} />,
   },
   {
     key: "source",

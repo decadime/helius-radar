@@ -49,6 +49,7 @@ export default async function TrackedPage({
       segment: a.segment,
       recommendedWedge: a.recommendedWedge,
       identificationScore: a.identificationScore,
+      rpcProvider: a.rpcProvider,
       latestSignalTitle: latest?.title ?? null,
       freshnessLabel: label,
       freshnessDays: days,

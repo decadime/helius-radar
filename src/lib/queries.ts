@@ -91,24 +91,42 @@ export function getTargetsForDate(date: Date, limit?: number) {
 export type UniverseFilters = {
   segment: Segment | null;
   status: TrackStatus | null;
+  /** When true, only return accounts on a known Helius competitor RPC. */
+  competitorRpc: boolean;
 };
 
 /** Allow-list filters against the enum so bad query strings never hit Prisma. */
 export function normalizeUniverseFilters(raw: {
   segment?: string;
   status?: string;
+  rpc?: string;
 }): UniverseFilters {
   return {
     segment: raw.segment && isSegment(raw.segment) ? raw.segment : null,
     status: raw.status && isTrackStatus(raw.status) ? raw.status : null,
+    competitorRpc: raw.rpc === "competitor",
   };
 }
 
-export function getUniverse({ segment, status }: UniverseFilters) {
+const COMPETITOR_RPC_PROVIDERS = [
+  "ALCHEMY",
+  "QUICKNODE",
+  "SYNDICA",
+  "TRITON",
+  "SHYFT",
+  "ANKR",
+  "CHAINSTACK",
+  "PUBLIC_SOLANA",
+] as const;
+
+export function getUniverse({ segment, status, competitorRpc }: UniverseFilters) {
   return prisma.account.findMany({
     where: {
       ...(segment ? { segment } : {}),
       ...(status ? { trackStatus: status } : {}),
+      ...(competitorRpc
+        ? { rpcProvider: { in: [...COMPETITOR_RPC_PROVIDERS] } }
+        : {}),
     },
     orderBy: [
       { identificationScore: { sort: "desc", nulls: "last" } },
@@ -124,6 +142,7 @@ export function getUniverse({ segment, status }: UniverseFilters) {
       confidence: true,
       recommendedWedge: true,
       source: true,
+      rpcProvider: true,
     },
   });
 }
@@ -150,6 +169,7 @@ export function getTrackedAccounts({ q, wedge }: TrackedFilters) {
       segment: true,
       recommendedWedge: true,
       identificationScore: true,
+      rpcProvider: true,
       signals: {
         orderBy: { detectedAt: "desc" },
         take: 1,

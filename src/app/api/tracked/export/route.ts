@@ -12,6 +12,7 @@ const HEADERS = [
   "freshness",
   "freshness_days",
   "recommended_wedge",
+  "rpc_provider",
   "identification_score",
 ];
 
@@ -34,6 +35,7 @@ export async function GET(req: NextRequest) {
         label ?? "",
         days ?? "",
         a.recommendedWedge ?? "",
+        a.rpcProvider ?? "",
         a.identificationScore ?? "",
       ];
     })

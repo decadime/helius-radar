@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import { DataTable, type Column } from "@/components/ui/DataTable";
 import { EmptyState } from "@/components/ui/Panel";
-import { SegmentBadge } from "@/components/ui/Badges";
+import { RpcProviderBadge, SegmentBadge } from "@/components/ui/Badges";
 import { formatScore } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import type { RpcProvider } from "@/lib/enums";
 
 export type TrackedRow = {
   id: string;
@@ -13,6 +14,7 @@ export type TrackedRow = {
   segment: string;
   recommendedWedge: string | null;
   identificationScore: number | null;
+  rpcProvider: RpcProvider | null;
   latestSignalTitle: string | null;
   freshnessLabel: string | null;
   freshnessDays: number | null;
@@ -97,6 +99,11 @@ const columns: Column<TrackedRow>[] = [
       ) : (
         <span className="text-fg-muted">—</span>
       ),
+  },
+  {
+    key: "rpc",
+    header: "RPC",
+    render: (r) => <RpcProviderBadge value={r.rpcProvider} />,
   },
   {
     key: "score",

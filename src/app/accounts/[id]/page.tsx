@@ -6,13 +6,14 @@ import { computeBdView } from "@/lib/bdView";
 import { PageContainer, Breadcrumb } from "@/components/ui/PageContainer";
 import { Panel, EmptyState } from "@/components/ui/Panel";
 import {
+  RpcProviderBadge,
   SegmentBadge,
   TargetStatusBadge,
   TrackStatusBadge,
 } from "@/components/ui/Badges";
 import { BdViewCard } from "@/components/account/BdViewCard";
 import { TrackStatusControls } from "@/components/account/TrackStatusControls";
-import { TrackStatus } from "@/lib/enums";
+import { TrackStatus, type RpcProvider } from "@/lib/enums";
 import {
   ProductMatchList,
   type ProductMatchItem,
@@ -60,6 +61,7 @@ export default async function AccountDetailPage({
     recommendedWedge: account.recommendedWedge,
     description: account.description,
     heliusFitSummary: account.heliusFitSummary,
+    rpcProvider: account.rpcProvider,
     signals: signals.map((s) => ({
       signalType: s.signalType,
       title: s.title,
@@ -169,6 +171,7 @@ type AccountLike = {
   identificationScore: number | null;
   confidence: number | null;
   recommendedWedge: string | null;
+  rpcProvider: RpcProvider | null;
 };
 
 function AccountHeader({ account }: { account: AccountLike }) {
@@ -195,6 +198,7 @@ function AccountHeader({ account }: { account: AccountLike }) {
             <span className="text-fg-faint">·</span>
             <SegmentBadge value={account.segment} />
             <TrackStatusBadge value={account.trackStatus} />
+            <RpcProviderBadge value={account.rpcProvider} />
           </div>
         </div>
 
